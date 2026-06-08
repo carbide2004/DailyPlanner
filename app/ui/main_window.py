@@ -263,8 +263,12 @@ class MainWindow(tk.Tk):
         state.timer.daemon = True
         state.timer.start()
 
+    def _has_pending_tasks(self):
+        task_service.ensure_current_day()
+        return bool(task_service.get_pending_tasks(state.data))
+
     def _fire_reminder(self):
-        if not state.reminder_open:
+        if not state.reminder_open and self._has_pending_tasks():
             self.after(0, self._show_reminder)
         # Reschedule regardless
         self._schedule_reminder()
